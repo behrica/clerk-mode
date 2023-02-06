@@ -40,7 +40,7 @@
      (concat "(nextjournal.clerk/show! \"" filename "\")"))))
 
 
-(defun clerk-get-current-viewers ()
+(defun clerk--get-current-viewers-dynamic ()
 
   (read
    (nrepl-dict-get
@@ -59,10 +59,26 @@
      (cider-current-connection))
     "value")))
 
+(defun clerk--get-current-viewers ()
+
+  '(":default"
+    "nextjournal.clerk.viewer/table-viewer"
+    "nextjournal.clerk.viewer/markdown-viewer"
+    "nextjournal.clerk.viewer/plotly-viewer"
+    "nextjournal.clerk.viewer/vega-lite-viewer"
+    "nextjournal.clerk.viewer/table-viewer"
+    "nextjournal.clerk.viewer/row-viewer"
+    "nextjournal.clerk.viewer/col-viewer"
+    "nextjournal.clerk.viewer/katex-viewer"
+    "nextjournal.clerk.viewer/code-viewer"
+    )
+  )
+
+
 ;;  Call while in `cider-inspector` to show current value in Cler after a viewer is selected
 (defun cider-inspector-tap-current-val-with-clerk-viewer (viewer)
   (interactive
-   (list (completing-read "Choose viewer: " (clerk-get-current-viewers)
+   (list (completing-read "Choose viewer: " (clerk--get-current-viewers)
                           nil t)))
 
   (setq cider-inspector--current-repl (cider-current-repl))
@@ -71,16 +87,18 @@
               (var-name "cider-inspector-temp-hdhsad-hbjdbasjd842342")
               (value (cider-sync-request:inspect-def-current-val ns var-name)))
 
-    (let ((tapped-form (concat "(clojure.core/->> "
-                               (concat ns "/" var-name)
-                               (if (equal ":default" viewer)
-                                   (concat " (nextjournal.clerk/with-viewer {:transform-fn identity})")
-                                 (if (string-prefix-p ":" viewer)
-                                     (concat " (nextjournal.clerk/with-viewer " "(keyword \"" (substring viewer 1) "\")" ")")
-                                   (concat " (nextjournal.clerk/with-viewer " "(symbol \"" viewer "\")" ")"))
-                                 )
+    (let ((tapped-form (concat
+                        "(require '[nextjournal.clerk.viewer])"
+                        "(clojure.core/->> "
+                        (concat ns "/" var-name)
+                        (if (equal ":default" viewer)
+                            (concat " (nextjournal.clerk/with-viewer {:transform-fn identity})")
+                          (if (string-prefix-p ":" viewer)
+                              (concat " (nextjournal.clerk/with-viewer " "(keyword \"" (substring viewer 1) "\")" ")")
+                            (concat " (nextjournal.clerk/with-viewer " viewer ")"))
+                          )
 
-                               " (clojure.core/tap>))")))
+                        " (clojure.core/tap>))")))
       (cider-interactive-eval tapped-form
                               nil
                               nil
