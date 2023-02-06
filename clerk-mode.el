@@ -59,26 +59,27 @@
      (cider-current-connection))
     "value")))
 
-(defun clerk--get-current-viewers ()
+(defcustom clerk--current-viewers
 
   '(":default"
-    "nextjournal.clerk.viewer/table-viewer"
-    "nextjournal.clerk.viewer/markdown-viewer"
-    "nextjournal.clerk.viewer/plotly-viewer"
-    "nextjournal.clerk.viewer/vega-lite-viewer"
-    "nextjournal.clerk.viewer/table-viewer"
-    "nextjournal.clerk.viewer/row-viewer"
-    "nextjournal.clerk.viewer/col-viewer"
-    "nextjournal.clerk.viewer/katex-viewer"
-    "nextjournal.clerk.viewer/code-viewer"
-    )
+   "nextjournal.clerk.viewer/table-viewer"
+   "nextjournal.clerk.viewer/markdown-viewer"
+   "nextjournal.clerk.viewer/plotly-viewer"
+   "nextjournal.clerk.viewer/vega-lite-viewer"
+   "nextjournal.clerk.viewer/table-viewer"
+   "nextjournal.clerk.viewer/row-viewer"
+   "nextjournal.clerk.viewer/col-viewer"
+   "nextjournal.clerk.viewer/katex-viewer"
+   "nextjournal.clerk.viewer/code-viewer"
+   )
+  "List of viewers for selection"
   )
 
 
 ;;  Call while in `cider-inspector` to show current value in Cler after a viewer is selected
 (defun cider-inspector-tap-current-val-with-clerk-viewer (viewer)
   (interactive
-   (list (completing-read "Choose viewer: " (clerk--get-current-viewers)
+   (list (completing-read "Choose viewer: " clerk--current-viewers
                           nil t)))
 
   (setq cider-inspector--current-repl (cider-current-repl))
