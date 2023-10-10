@@ -39,6 +39,23 @@
     (cider-interactive-eval
      (concat "(nextjournal.clerk/show! \"" filename "\")"))))
 
+(defun clerk-open-tap-inspector ()
+  (interactive)
+  (cider-interactive-eval "(nextjournal.clerk/show! 'nextjournal.clerk.tap)")
+  )
+
+(defun clojure-tap (&rest r)
+  (cons (concat "(let [__value "
+                (caar r)
+                "] (tap> __value) __value)")
+        (cdar r)))
+
+(defun nrepl-auto-tap ()
+    (interactive)
+    (advice-add 'cider-nrepl-request:eval
+                :filter-args #'clojure-tap))
+
+
 (define-minor-mode clerk-mode
   "Minor mode for presenting files in Clerk."
   :lighter " clerk"
