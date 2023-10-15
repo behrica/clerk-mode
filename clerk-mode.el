@@ -110,11 +110,13 @@
 
 (defun clerk/serve! ()
   (interactive)
+  (cider-interactive-eval "(require '[nextjournal.clerk])")
   (cider-interactive-eval "(nextjournal.clerk/serve! {:browse? true})")
   )
 
 (defun clerk/serve-no-browser! ()
   (interactive)
+  (cider-interactive-eval "(require '[nextjournal.clerk])")
   (cider-interactive-eval "(nextjournal.clerk/serve! {:host \"0.0.0.0\"})")
   )
 
