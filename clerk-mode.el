@@ -29,7 +29,7 @@
 
 (require 'cider)
 
-(defun clerk-show ()
+(defun clerk/show ()
   "Present the current buffer (if visiting a file) in the clerk viewer."
   (interactive)
   (when-let
@@ -108,22 +108,47 @@
 
     (message "%s#'%s/%s = %s" cider-eval-result-prefix ns var-name value)))
 
-
-(defun clerk-open-tap-inspector ()
+(defun clerk/serve! ()
   (interactive)
-  (cider-nrepl-sync-request:eval
-   (concat "(require '[nextjournal.clerk :as clerk])"
-           "(nextjournal.clerk/show! 'nextjournal.clerk.tap)"
-           "(clerk/serve! {:browse true})"
+  (cider-interactive-eval "(nextjournal.clerk/serve! {:browse? true})")
+  )
 
-           )))
+(defun clerk/serve-no-browser! ()
+  (interactive)
+  (cider-interactive-eval "(nextjournal.clerk/serve! {:host \"0.0.0.0\"})")
+  )
 
+
+(defun clerk/open-tap-inspector ()
+  (interactive)
+  (cider-interactive-eval "(require '[nextjournal.clerk])")
+  (cider-interactive-eval "(nextjournal.clerk/show! 'nextjournal.clerk.tap)")
+  )
+
+(defun clerk/tap-last-sexp-with-viewer (viewer)
+  (interactive
+   (list (completing-read "Choose viewer: " (clerk-get-current-viewers) nil t)))
+
+  (let ((tapped-form (concat "(clojure.core/->> "
+                             (cider-last-sexp)
+                             (if (equal "default" viewer)
+                                 (concat " (nextjournal.clerk/with-viewer {:transform-fn identity})")
+                               (if (string-prefix-p ":" viewer)
+                                   (concat " (nextjournal.clerk/with-viewer " "(keyword \"" (substring viewer 1) "\")" ")")
+                                 (concat " (nextjournal.clerk/with-viewer " "(symbol \"" viewer "\")" ")"))
+                               )
+
+                             " (clojure.core/tap>))")))
+    (cider-interactive-eval tapped-form
+                            nil
+                            nil
+                            (cider--nrepl-pr-request-map))))
 
 (define-minor-mode clerk-mode
   "Minor mode for presenting files in Clerk."
   :lighter " clerk"
   :keymap (let ((keymap (make-sparse-keymap)))
-            (define-key keymap (kbd "M-RET") 'clerk-show)
+            (define-key keymap (kbd "M-RET") 'clerk/show)
             keymap))
 
 (provide 'clerk-mode)
