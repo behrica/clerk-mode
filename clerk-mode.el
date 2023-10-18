@@ -143,7 +143,7 @@
                             nil
                             (cider--nrepl-pr-request-map))))
 
-(defun clerk/tap-exp-at-point-with-viewer (viewer)
+(defun clerk/tap-sexp-at-point-with-viewer (viewer)
   "Tap the sexp at point with viewer selection."
   (interactive
    (list (completing-read "Choose viewer: " clerk--current-viewers nil t)))
