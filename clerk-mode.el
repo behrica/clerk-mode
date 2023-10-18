@@ -76,8 +76,9 @@
   )
 
 
-;;  Call while in `cider-inspector` to show current value in Cler after a viewer is selected
+
 (defun cider-inspector-tap-current-val-with-clerk-viewer (viewer)
+  "Call while in `cider-inspector` to show current value in Clerk after a viewer is selected"
   (interactive
    (list (completing-read "Choose viewer: " clerk--current-viewers
                           nil t)))
@@ -98,12 +99,14 @@
     (message "%s#'%s/%s = %s" cider-eval-result-prefix ns var-name value)))
 
 (defun clerk/serve! ()
+  "Starts Clerk server and system browser"
   (interactive)
   (cider-interactive-eval "(require '[nextjournal.clerk])")
   (cider-interactive-eval "(nextjournal.clerk/serve! {:browse? true})")
   )
 
 (defun clerk/serve-no-browser! ()
+  "Starts Clerk server without browser and listens on 0.0.0.0"
   (interactive)
   (cider-interactive-eval "(require '[nextjournal.clerk])")
   (cider-interactive-eval "(nextjournal.clerk/serve! {:host \"0.0.0.0\"})")
@@ -111,6 +114,7 @@
 
 
 (defun clerk/open-tap-inspector ()
+  "Opens Clerk's tap inspector"
   (interactive)
   (cider-interactive-eval "(require '[nextjournal.clerk])")
   (cider-interactive-eval "(nextjournal.clerk/show! 'nextjournal.clerk.tap)")
@@ -129,6 +133,7 @@
           " (clojure.core/tap>))"))
 
 (defun clerk/tap-last-sexp-with-viewer (viewer)
+  "Tap the last sexp fater viewer selection."
   (interactive
    (list (completing-read "Choose viewer: " clerk--current-viewers nil t)))
 
